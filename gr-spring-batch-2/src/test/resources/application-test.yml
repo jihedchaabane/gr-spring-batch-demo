@@ -1,0 +1,45 @@
+# Configuration spécifique pour les tests unitaires avec H2
+spring:
+  # Configuration de la source de données H2 en mémoire
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;SCHEMA=PUBLIC
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+    hikari:
+      maximum-pool-size: 10       # Taille du pool pour les tests
+      minimum-idle: 2             # Minimum de connexions inactives
+      idle-timeout: 30000         # Temps d'inactivité (30s)
+      connection-timeout: 20000   # Temps d'attente pour une connexion (20s)
+
+  # Configuration JPA pour H2
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop      # Crée et supprime le schéma à chaque test
+    properties:
+      hibernate:
+        jdbc.batch_size: 100     # Taille du batch pour les tests
+        order_inserts: true      # Optimisation des insertions
+        order_updates: true      # Optimisation des mises à jour
+        default_schema: PUBLIC   # Forcer le schéma PUBLIC pour JPA
+    show-sql: true               # Afficher les requêtes SQL pour débogage
+
+  # Configuration Spring Batch pour les tests
+  batch:
+    job:
+      enabled: false             # Désactiver l'exécution automatique des jobs dans les tests
+#    jdbc:
+#      initialize-schema: always # Forcer la création des tables de métadonnées
+#      schema: PUBLIC            # Spécifier explicitement le schéma PUBLIC pour Batch
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-h2.sql
+
+# Configuration du logging pour déboguer l'initialisation
+logging:
+  level:
+    org.springframework.batch: TRACE  # Niveau TRACE pour voir l'initialisation des tables
+    org.hibernate: DEBUG              # Débogage des requêtes JPA
+    com.example: INFO                 # Niveau INFO pour votre code

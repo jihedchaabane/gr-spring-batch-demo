@@ -1,0 +1,48 @@
+# Configuration générale de l'application Spring Boot
+spring:
+  application:
+    name: gr-spring-batch-2
+
+  # Configuration de la source de données PostgreSQL
+  datasource:
+    url: jdbc:postgresql://10.0.0.137:5432/postgres_data_source
+    username: postgres_data_source
+    password: postgres_data_source
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # Optimisation pour gros volumes de données
+      maximum-pool-size: 50        # Nombre max de connexions dans le pool
+      minimum-idle: 10             # Nombre min de connexions inactives
+      idle-timeout: 300000         # Temps d'inactivité avant fermeture (5 min)
+      max-lifetime: 1800000        # Durée de vie max d'une connexion (30 min)
+      connection-timeout: 30000    # Temps max d'attente pour une connexion (30s)
+  # Configuration JPA et Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc.batch_size: 1000      # Taille du batch pour les insertions
+        order_inserts: true        # Optimisation des insertions
+        order_updates: true        # Optimisation des mises à jour
+        generate_statistics: true  # Statistiques pour débogage
+    show-sql: true                 # Afficher les requêtes SQL pour apprentissage
+  # Configuration Spring Batch
+  batch:
+    job:
+      enabled: true              # Activer l'exécution des jobs au démarrage
+#    jdbc:
+#      initialize-schema: ALWAYS  # Créer automatiquement les tables de métadonnées
+#    initialize-schema: ALWAYS    # Initialisation du schéma Batch
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql, classpath:truncate.sql
+
+# Configuration du logging pour suivre l'exécution
+logging:
+  level:
+    org.springframework.batch: DEBUG  # Niveau DEBUG pour Batch
+    com.chj.gr: INFO                  # Niveau INFO pour mon code

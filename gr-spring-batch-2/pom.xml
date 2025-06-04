@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>gr-spring-batch-2</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>gr-spring-batch-2</name>
+	<description>spring-batch-example</description>
+
+	<parent>
+		<groupId>com.chj.gr</groupId>
+		<artifactId>gr-spring-batch-demo</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+</project>
