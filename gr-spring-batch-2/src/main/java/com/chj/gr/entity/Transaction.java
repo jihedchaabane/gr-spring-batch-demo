@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * Entité représentant une transaction financière.
@@ -17,6 +18,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "batch_entity_transaction")
+@ToString
 public class Transaction {
 
     @Id

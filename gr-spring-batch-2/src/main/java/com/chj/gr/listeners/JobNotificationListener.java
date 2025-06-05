@@ -21,7 +21,7 @@ public class JobNotificationListener implements JobExecutionListener {
 
     @Override
 	public void beforeJob(JobExecution jobExecution) {
-    	log.info("beforeJob...");
+    	log.debug("beforeJob...");
 	}
 
 	@Override

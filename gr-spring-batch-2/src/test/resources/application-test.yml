@@ -29,17 +29,13 @@ spring:
   batch:
     job:
       enabled: false             # Désactiver l'exécution automatique des jobs dans les tests
-#    jdbc:
-#      initialize-schema: always # Forcer la création des tables de métadonnées
-#      schema: PUBLIC            # Spécifier explicitement le schéma PUBLIC pour Batch
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema-h2.sql
+    jdbc:
+      initialize-schema: always # Forcer la création des tables de métadonnées
+      schema: PUBLIC            # Spécifier explicitement le schéma PUBLIC pour Batch
 
 # Configuration du logging pour déboguer l'initialisation
 logging:
   level:
     org.springframework.batch: TRACE  # Niveau TRACE pour voir l'initialisation des tables
     org.hibernate: DEBUG              # Débogage des requêtes JPA
-    com.example: INFO                 # Niveau INFO pour votre code
+    com.chj.gr: DEBUG                 # Niveau DEBUG pour mon code
