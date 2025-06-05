@@ -16,7 +16,7 @@ public class TransactionCountDecider implements JobExecutionDecider {
     @Override
     public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution) {
         // Récupérer le nombre de perons écrites depuis le contexte.
-        long writeCount = stepExecution != null ? stepExecution.getWriteCount() : 0;
+        long writeCount = stepExecution.getWriteCount();
 
         // Décider en fonction du nombre de transactions
         if (writeCount == 3) {

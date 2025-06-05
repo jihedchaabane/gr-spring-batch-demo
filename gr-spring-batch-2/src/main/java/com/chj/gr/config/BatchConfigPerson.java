@@ -49,13 +49,14 @@ public class BatchConfigPerson {
                 .targetType(Person.class)
                 /**
                  * OR.
-                 */
+                 
                 .fieldSetMapper(fieldSet -> {
                     Person person = new Person();
                     person.setFirstName(fieldSet.readString("firstName"));
                     person.setLastName(fieldSet.readString("lastName"));
                     return person;
                 })
+                */
                 .build();
     }
 
@@ -126,7 +127,7 @@ public class BatchConfigPerson {
     public Step successPersonTasklet(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("successPersonTasklet", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("SUCCESS Step: Exactly 24 persons processed.");
+                    log.info("SUCCESS Person Tasklet: Exactly 24 persons processed.");
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();
@@ -136,7 +137,7 @@ public class BatchConfigPerson {
     public Step warningPersonTasklet(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("warningPersonTasklet", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                	log.info("WARNING Step: More/Less than 24 persons processed.");
+                	log.info("WARNING Person Tasklet: More/Less than 24 persons processed.");
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();

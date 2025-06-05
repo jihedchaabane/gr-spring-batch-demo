@@ -37,5 +37,5 @@ spring:
 logging:
   level:
     org.springframework.batch: TRACE  # Niveau TRACE pour voir l'initialisation des tables
-    org.hibernate: DEBUG              # Débogage des requêtes JPA
+    org.hibernate: INFO               # Débogage des requêtes JPA
     com.chj.gr: DEBUG                 # Niveau DEBUG pour mon code

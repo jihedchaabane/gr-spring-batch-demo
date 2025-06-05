@@ -16,9 +16,9 @@ public class PersonCountDecider implements JobExecutionDecider {
     @Override
     public FlowExecutionStatus decide(JobExecution jobExecution, StepExecution stepExecution) {
         // Récupérer le nombre de perons écrites depuis le contexte.
-        long writeCount = stepExecution != null ? stepExecution.getWriteCount() : 0;
+        long writeCount = stepExecution.getWriteCount();
 
-        // Décider en fonction du nombre de transactions
+        // Décider en fonction du nombre de persons.
         if (writeCount == 24) {
             return new FlowExecutionStatus("SUCCESS");
         } else {

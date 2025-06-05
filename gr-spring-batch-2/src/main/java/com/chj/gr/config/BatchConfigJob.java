@@ -46,7 +46,7 @@ public class BatchConfigJob {
     		Step successTransactionTasklet, 
             Step warningTransactionTasklet,
     		
-            Step successJobTasklet,
+            Step endJobTasklet,
     		JobNotificationListener jobNotificationListener) {
         return new JobBuilder("importDataJob", jobRepository)
         		.listener(jobNotificationListener)
@@ -56,18 +56,25 @@ public class BatchConfigJob {
 	                	.next(transactionStep)
 	                		.next(transactionCountDecider)
 	                			.on("SUCCESS").to(successTransactionTasklet)
-	                			.from(transactionCountDecider).on("WARNING").to(warningTransactionTasklet)
-	                .from(personDecider).on("WARNING").to(warningPersonTasklet)
-	             .next(successJobTasklet)
+	                			.next(endJobTasklet)
+	                			.from(transactionCountDecider)
+	                				.on("WARNING")
+	                				.to(warningTransactionTasklet)
+	                				.next(endJobTasklet)
+	                .from(personDecider)
+	                	.on("WARNING")
+	                	.to(warningPersonTasklet)
+	                	.next(endJobTasklet)
+//	             .next(endJobTasklet) ==> NE fonctionne pas.
 	            .end()
                 .build();
     }
     
     @Bean
-    public Step successJobTasklet(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("successJobTasklet", jobRepository)
+    public Step endJobTasklet(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("endJobTasklet", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("SUCCESS Job Step: ALL GOOD.");
+                    log.info("END Job Tasklet: JOB END.");
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();

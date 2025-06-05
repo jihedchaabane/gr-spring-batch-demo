@@ -45,5 +45,5 @@ spring:
 logging:
   level:
     org.springframework.batch: DEBUG  # Niveau DEBUG pour Batch
-    org.hibernate: DEBUG              # Débogage des requêtes JPA
+    org.hibernate: INFO               # Débogage des requêtes JPA
     com.chj.gr: INFO                  # Niveau INFO pour mon code

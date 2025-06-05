@@ -47,7 +47,7 @@ public class BatchConfigTransaction {
                 .targetType(Transaction.class)
                 /**
                  * OR.
-                 */
+                 
                 .fieldSetMapper(fieldSet -> {
                 	Transaction transaction = new Transaction();
                 	transaction.setTransactionId(fieldSet.readString("transactionId"));
@@ -57,6 +57,7 @@ public class BatchConfigTransaction {
                 	transaction.setDescription(fieldSet.readString("description"));
                     return transaction;
                 })
+                */
                 .build();
     }
 
@@ -124,7 +125,7 @@ public class BatchConfigTransaction {
     public Step successTransactionTasklet(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("successTransactionTasklet", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("SUCCESS Step: Exactly 3 transactions processed.");
+                    log.info("SUCCESS Transaction Tasklet: Exactly 3 transactions processed.");
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();
@@ -134,7 +135,7 @@ public class BatchConfigTransaction {
     public Step warningTransactionTasklet(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         return new StepBuilder("warningTransactionTasklet", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                	log.info("WARNING Step: More/Less than 3 transactions processed.");
+                	log.info("WARNING Transaction Tasklet: More/Less than 3 transactions processed.");
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();
