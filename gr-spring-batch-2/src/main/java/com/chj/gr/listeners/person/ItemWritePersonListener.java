@@ -9,21 +9,21 @@ import com.chj.gr.entity.Person;
 import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
-public class ItemWriteNotificationListener implements ItemWriteListener<Person> {
+public class ItemWritePersonListener implements ItemWriteListener<Person> {
 
 	@Override
 	public void beforeWrite(Chunk<? extends Person> items) {
-		log.debug("beforeWrite {}", items.size());
+		log.debug("beforeWrite {} persons", items.size());
 	}
 
 	@Override
 	public void afterWrite(Chunk<? extends Person> items) {
-		log.debug("afterWrite {}", items.size());
+		log.debug("afterWrite {} persons", items.size());
 	}
 
 	@Override
 	public void onWriteError(Exception exception, Chunk<? extends Person> items) {
-		log.debug("onWriteError {}:{}", items.size(), exception.getMessage());
+		log.debug("onWriteError {} persons :{}", items.size(), exception.getMessage());
 	}
 	
 	

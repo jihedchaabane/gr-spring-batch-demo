@@ -1,7 +1,6 @@
 package com.chj.gr.processors;
 
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.util.StringUtils;
 
 import com.chj.gr.entity.Transaction;
 
@@ -16,7 +15,7 @@ public class TransactionItemProcessor implements ItemProcessor<Transaction, Tran
         // Exemple de transformation : Mettre le statut en majuscules
         transaction.setStatus(transaction.getStatus().toUpperCase());
         // Ajouter une description si vide
-        if (StringUtils.isEmpty(transaction.getDescription())) {
+        if (io.micrometer.common.util.StringUtils.isEmpty(transaction.getDescription())) {
             transaction.setDescription("Processed transaction");
         }
         return transaction;

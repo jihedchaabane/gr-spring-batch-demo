@@ -19,9 +19,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.chj.gr.entity.Person;
 import com.chj.gr.listeners.ChunkNotificationListener;
 import com.chj.gr.listeners.StepExecutionNotificationListener;
-import com.chj.gr.listeners.person.ItemProcessNotificationListener;
-import com.chj.gr.listeners.person.ItemReaderNotificationListener;
-import com.chj.gr.listeners.person.ItemWriteNotificationListener;
+import com.chj.gr.listeners.person.ItemProcessPersonListener;
+import com.chj.gr.listeners.person.ItemReadPersonListener;
+import com.chj.gr.listeners.person.ItemWritePersonListener;
 import com.chj.gr.processors.PersonItemProcessor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +47,9 @@ public class BatchConfigPerson {
                 .names(new String[]{"firstName", "lastName"})
                 .linesToSkip(1)
                 .targetType(Person.class)
+                /**
+                 * OR.
+                 */
                 .fieldSetMapper(fieldSet -> {
                     Person person = new Person();
                     person.setFirstName(fieldSet.readString("firstName"));
@@ -89,11 +92,14 @@ public class BatchConfigPerson {
     		FlatFileItemReader<Person> personReader, 
     		PersonItemProcessor personProcessor,
     		JdbcBatchItemWriter<Person> personWriter,
+    		/**
+             * listeners
+             */
     		StepExecutionNotificationListener stepExecutionNotificationListener,
     		ChunkNotificationListener chunkNotificationListener,
-    		ItemReaderNotificationListener itemReaderNotificationListener,
-    		ItemProcessNotificationListener itemProcessNotificationListener,
-    		ItemWriteNotificationListener itemWriteNotificationListener) {
+    		ItemReadPersonListener itemReadPersonListener,
+    		ItemProcessPersonListener itemProcessPersonListener,
+    		ItemWritePersonListener itemWritePersonListener) {
     	
         return new StepBuilder("personStep", jobRepository)
                 .<Person, Person>chunk(10, transactionManager) // Taille du chunk pour traitement par lots
@@ -109,9 +115,9 @@ public class BatchConfigPerson {
                  */
                 .listener(stepExecutionNotificationListener)
                 .listener(chunkNotificationListener)
-                .listener(itemReaderNotificationListener)
-                .listener(itemProcessNotificationListener)
-                .listener(itemWriteNotificationListener)
+                .listener(itemReadPersonListener)
+                .listener(itemProcessPersonListener)
+                .listener(itemWritePersonListener)
 //                .listener(SimpleStepBuilder<I, O>)
                 .build();
     }

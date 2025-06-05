@@ -12,17 +12,17 @@ public class ChunkNotificationListener implements ChunkListener {
 
 	@Override
 	public void beforeChunk(ChunkContext context) {
-		log.debug("beforeChunk");
+		log.debug("beforeChunk for step {}", context.getStepContext().getStepName());
 	}
 
 	@Override
 	public void afterChunk(ChunkContext context) {
-		log.debug("afterChunk");
+		log.debug("afterChunk for step {}", context.getStepContext().getStepName());
 	}
 
 	@Override
 	public void afterChunkError(ChunkContext context) {
-		log.debug("afterChunkError");
+		log.debug("afterChunkError for step {}", context.getStepContext().getStepName());
 	}
 
 	

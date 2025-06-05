@@ -1,27 +1,27 @@
-package com.chj.gr.listeners.person;
+package com.chj.gr.listeners.transaction;
 
 import org.springframework.batch.core.ItemProcessListener;
 import org.springframework.stereotype.Component;
 
-import com.chj.gr.entity.Person;
+import com.chj.gr.entity.Transaction;
 
 import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
-public class ItemProcessNotificationListener implements ItemProcessListener<Person, Person> {
+public class ItemProcessTransactionListener implements ItemProcessListener<Transaction, Transaction> {
 
 	@Override
-	public void beforeProcess(Person item) {
+	public void beforeProcess(Transaction item) {
 		log.debug("beforeProcess {}", item.toString());
 	}
 
 	@Override
-	public void afterProcess(Person item, Person result) {
+	public void afterProcess(Transaction item, Transaction result) {
 		log.debug("afterProcess {}", result.toString());
 	}
 
 	@Override
-	public void onProcessError(Person item, Exception e) {
+	public void onProcessError(Transaction item, Exception e) {
 		log.debug("onProcessError {}:{}", item.toString(), e.getMessage());
 	}
 

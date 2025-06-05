@@ -1,7 +1,6 @@
 package com.chj.gr.config;
 
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.JpaItemWriter;
@@ -17,6 +16,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.chj.gr.entity.Transaction;
 import com.chj.gr.listeners.ChunkNotificationListener;
 import com.chj.gr.listeners.StepExecutionNotificationListener;
+import com.chj.gr.listeners.transaction.ItemProcessTransactionListener;
+import com.chj.gr.listeners.transaction.ItemReadTransactionListener;
+import com.chj.gr.listeners.transaction.ItemWriteTransactionListener;
 import com.chj.gr.processors.TransactionItemProcessor;
 
 import jakarta.persistence.EntityManagerFactory;
@@ -43,6 +45,9 @@ public class BatchConfigTransaction {
                 .names("transactionId", "amount", "status", "transactionDate", "description")
                 .linesToSkip(1)
                 .targetType(Transaction.class)
+                /**
+                 * OR.
+                 */
                 .fieldSetMapper(fieldSet -> {
                 	Transaction transaction = new Transaction();
                 	transaction.setTransactionId(fieldSet.readString("transactionId"));
@@ -86,8 +91,14 @@ public class BatchConfigTransaction {
             FlatFileItemReader<Transaction> transactionReader, 
             TransactionItemProcessor transactionProcessor,
             JpaItemWriter<Transaction> transactionWriter,
-            StepExecutionNotificationListener stepExecutionNotificationListener,
-    		ChunkNotificationListener chunkNotificationListener) {
+    		/**
+             * listeners
+             */
+    		StepExecutionNotificationListener stepExecutionNotificationListener,
+    		ChunkNotificationListener chunkNotificationListener,
+    		ItemReadTransactionListener itemReadTransactionListener,
+    		ItemProcessTransactionListener itemProcessTransactionListener,
+    		ItemWriteTransactionListener itemWriteTransactionListener) {
         return new StepBuilder("transactionStep", jobRepository)
                 .<Transaction, Transaction>chunk(1000, transactionManager) // Taille du chunk pour traitement par lots
                 .reader(transactionReader)
@@ -102,6 +113,10 @@ public class BatchConfigTransaction {
                  */
                 .listener(stepExecutionNotificationListener)
                 .listener(chunkNotificationListener)
+                .listener(itemReadTransactionListener)
+                .listener(itemProcessTransactionListener)
+                .listener(itemWriteTransactionListener)
+//                .listener(SimpleStepBuilder<I, O>)
                 .build();
     }
 
