@@ -33,6 +33,9 @@ spring:
       initialize-schema: always # Forcer la création des tables de métadonnées
       schema: PUBLIC            # Spécifier explicitement le schéma PUBLIC pour Batch
 
+skipped:
+  batchSize: 3
+
 # Configuration du logging pour déboguer l'initialisation
 logging:
   level:

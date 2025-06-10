@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.batch.core.StepExecution;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.chj.gr.entity.BusinessObjectSkipped;
@@ -24,7 +25,9 @@ public class JobExecutionHolder {
     private final EntityManagerFactory entityManagerFactory;
     
     private List<BusinessObjectSkipped> failedRecords = new ArrayList<>();
-    private static final int BATCH_SIZE = 100;
+    
+    @Value("${skipped.batchSize}")
+    private int batchSize;
     
     public JobExecutionHolder(EntityManagerFactory entityManagerFactory) {
 		this.entityManagerFactory = entityManagerFactory;
@@ -38,10 +41,6 @@ public class JobExecutionHolder {
 		this.stepExecution = stepExecution;
 	}
 
-	public static int getBatchSize() {
-		return BATCH_SIZE;
-	}
-	
 	public synchronized void addFailedBusinessObject(BusinessObjectSkipped failedRecord) {
 		failedRecord.setJobExecutionId(stepExecution.getJobExecutionId());
 		failedRecord.setJobExecutionName(stepExecution.getJobExecution().getJobInstance().getJobName());
@@ -49,7 +48,7 @@ public class JobExecutionHolder {
 		failedRecord.setStepExecutionName(stepExecution.getStepName());
 		
 		failedRecords.add(failedRecord);
-		if (failedRecords.size() >= BATCH_SIZE) {
+		if (failedRecords.size() >= batchSize) {
             saveBatch();
         }
 	}

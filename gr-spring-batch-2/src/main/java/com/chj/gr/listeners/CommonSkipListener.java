@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
+@SuppressWarnings("deprecation")
 public class CommonSkipListener extends SkipListenerSupport<Object, Object> {
 
     private final JobExecutionHolder jobExecutionHolder;

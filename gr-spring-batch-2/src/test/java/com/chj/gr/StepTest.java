@@ -12,8 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * Classe de test unitaire pour la Step Spring Batch.
- * Vérifie l'exécution du Step et la transformation des données.
+ * Classe de test unitaire pour une Step spécifique Spring Batch.
+ * Vérifie que l'étape s'exécute correctement.
  */
 @SpringBatchTest
 @SpringBootTest
@@ -24,13 +24,71 @@ public class StepTest {
     private JobLauncherTestUtils jobLauncherTestUtils;
 
     /**
-     * Teste une étape spécifique du job.
-     * Vérifie que l'étape s'exécute correctement.
+     * Transactions steps.
      */
     @Test
-    public void testStepExecution() throws Exception {
+    public void transactionStepExecution() throws Exception {
         // Lancer uniquement l'étape 'transactionStep'
         JobExecution jobExecution = jobLauncherTestUtils.launchStep("transactionStep");
+
+        // Vérifier que l'étape s'est terminée avec succès
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+    
+    @Test
+    public void successTransactionTasklet() throws Exception {
+        // Lancer uniquement l'étape 'successTransactionTasklet'
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("successTransactionTasklet");
+
+        // Vérifier que l'étape s'est terminée avec succès
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+
+    @Test
+    public void warningTransactionTasklet() throws Exception {
+        // Lancer uniquement l'étape 'warningTransactionTasklet'
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("warningTransactionTasklet");
+
+        // Vérifier que l'étape s'est terminée avec succès
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+    /**
+     * Persons steps.
+     */
+    @Test
+    public void personStepExecution() throws Exception {
+        // Lancer uniquement l'étape 'personStep'
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("personStep");
+
+        // Vérifier que l'étape s'est terminée avec succès
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+    
+    @Test
+    public void successPersonTasklet() throws Exception {
+        // Lancer uniquement l'étape 'successPersonTasklet'
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("successPersonTasklet");
+
+        // Vérifier que l'étape s'est terminée avec succès
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+    
+    @Test
+    public void warningPersonTasklet() throws Exception {
+        // Lancer uniquement l'étape 'warningPersonTasklet'
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("warningPersonTasklet");
+
+        // Vérifier que l'étape s'est terminée avec succès
+        assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
+    }
+    
+    /**
+     * Job step.
+     */
+    @Test
+    public void endJobTasklet() throws Exception {
+        // Lancer uniquement l'étape 'endJobTasklet'
+        JobExecution jobExecution = jobLauncherTestUtils.launchStep("endJobTasklet");
 
         // Vérifier que l'étape s'est terminée avec succès
         assertEquals(BatchStatus.COMPLETED, jobExecution.getStatus());
