@@ -7,11 +7,12 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SkipPolicy pour gérer les exceptions lors de la lecture des persons.
+ * SkipPolicy pour gérer les exceptions lors de la gestion des persons (read/process/write).
+ * Autorise le skip jusqu'à une limite.
  */
 @Component
 @Slf4j
-public class PersonReadSkipPolicy implements SkipPolicy {
+public class PersonSkipPolicy implements SkipPolicy {
 
     @Override
     public boolean shouldSkip(Throwable throwable, long skipCount) throws SkipLimitExceededException {

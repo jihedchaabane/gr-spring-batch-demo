@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * SkipPolicy pour gérer les exceptions lors de la lecture des transactions.
- * Autorise le skip pour NumberFormatException jusqu'à une limite.
+ * SkipPolicy pour gérer les exceptions lors de la gestion des transactions (read/process/write).
+ * Autorise le skip jusqu'à une limite.
  */
 @Component
 @Slf4j
-public class TransactionReadSkipPolicy implements SkipPolicy {
+public class TransactionSkipPolicy implements SkipPolicy {
 
     @Override
     public boolean shouldSkip(Throwable throwable, long skipCount) throws SkipLimitExceededException {

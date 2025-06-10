@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Profile;
  * Configuration pour le CommandLineRunner qui exécute le job en production.
  */
 @Configuration
-@Profile("!test") // Exclure le profil test.
+@Profile("!test") // Exclure le profil test sinon les tests unitaires seront lancés deux (2) fois.
 public class JobRunnerConfig {
 
     private static final Logger log = LoggerFactory.getLogger(JobRunnerConfig.class);

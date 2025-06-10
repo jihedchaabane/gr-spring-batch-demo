@@ -14,7 +14,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.chj.gr.config.transaction.TransactionFieldSetMapper;
-import com.chj.gr.config.transaction.TransactionReadSkipPolicy;
+import com.chj.gr.config.transaction.TransactionSkipPolicy;
 import com.chj.gr.entity.Transaction;
 import com.chj.gr.listeners.ChunkNotificationListener;
 import com.chj.gr.listeners.CommonSkipListener;
@@ -89,7 +89,7 @@ public class BatchConfigTransaction {
             FlatFileItemReader<Transaction> transactionReader, 
             TransactionItemProcessor transactionItemProcessor,
             JpaItemWriter<Transaction> transactionWriter,
-            TransactionReadSkipPolicy transactionReadSkipPolicy,
+            TransactionSkipPolicy transactionSkipPolicy,
             CommonSkipListener commonSkipListener,
     		/**
              * listeners
@@ -106,7 +106,7 @@ public class BatchConfigTransaction {
                 .writer(transactionWriter)
                 .transactionManager(transactionManager)
                 .faultTolerant()
-                .skipPolicy(transactionReadSkipPolicy)
+                .skipPolicy(transactionSkipPolicy)
                 .listener(commonSkipListener) // For SkipListener
                 .skipLimit(10) // Allow up to 10 skips
                 .retry(Exception.class)      // Retry on any exception

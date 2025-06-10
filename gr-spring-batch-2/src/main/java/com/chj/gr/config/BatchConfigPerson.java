@@ -17,7 +17,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.chj.gr.config.person.PersonFieldSetMapper;
-import com.chj.gr.config.person.PersonReadSkipPolicy;
+import com.chj.gr.config.person.PersonSkipPolicy;
 import com.chj.gr.entity.Person;
 import com.chj.gr.listeners.ChunkNotificationListener;
 import com.chj.gr.listeners.CommonSkipListener;
@@ -91,7 +91,7 @@ public class BatchConfigPerson {
     		FlatFileItemReader<Person> personReader, 
     		PersonItemProcessor personProcessor,
     		JdbcBatchItemWriter<Person> personWriter,
-    		PersonReadSkipPolicy personReadSkipPolicy,
+    		PersonSkipPolicy personSkipPolicy,
             CommonSkipListener commonSkipListener,
     		/**
              * listeners
@@ -109,7 +109,7 @@ public class BatchConfigPerson {
                 .writer(personWriter)
                 .transactionManager(transactionManager)
                 .faultTolerant()
-                .skipPolicy(personReadSkipPolicy)
+                .skipPolicy(personSkipPolicy)
                 .listener(commonSkipListener) // For SkipListener
                 .skipLimit(10) // Allow up to 10 skips
                 .retry(Exception.class)      // Retry on any exception
