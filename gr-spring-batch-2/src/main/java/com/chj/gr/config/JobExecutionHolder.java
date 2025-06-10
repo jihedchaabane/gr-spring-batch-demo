@@ -54,7 +54,7 @@ public class JobExecutionHolder {
 	}
 	
 	/**
-	 * Enregistrer dans la table batch_entity_transaction_read_failed.
+	 * Enregistrer dans la table batch_entity_business_object_skipped.
 	 */
 	public synchronized void saveBatch() {
 		if (failedRecords != null && !failedRecords.isEmpty()) {
