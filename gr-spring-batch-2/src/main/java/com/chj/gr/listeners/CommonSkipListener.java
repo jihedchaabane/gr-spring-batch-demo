@@ -1,7 +1,5 @@
 package com.chj.gr.listeners;
 
-import java.time.LocalDateTime;
-
 import org.springframework.batch.core.listener.SkipListenerSupport;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.stereotype.Component;
@@ -29,26 +27,29 @@ public class CommonSkipListener extends SkipListenerSupport<Object, Object> {
 	@Override
     public void onSkipInRead(Throwable t) {
         if (t instanceof FlatFileParseException) {
-        	
             FlatFileParseException parseException = (FlatFileParseException) t;
             String rawData = parseException.getInput();
             String errorMessage = t.getCause() != null ? t.getCause().getMessage() : t.getMessage();
             
-    		BusinessObjectSkipped failedRecord = ExtractUtilities.extractInformations(rawData, "SkipInRead");
-            failedRecord.setErrorMessage(errorMessage);
-            failedRecord.setErrorTimestamp(LocalDateTime.now());
+            BusinessObjectSkipped failedRecord = ExtractUtilities.buildBoSkipped(rawData, "SkipInRead", errorMessage);
             jobExecutionHolder.addFailedBusinessObject(failedRecord);
         }
     }
 
-//	@Override
-//	public void onSkipInProcess(Object item, Throwable t) {
-//		super.onSkipInProcess(item, t);
-//	}
+	@Override
+	public void onSkipInProcess(Object item, Throwable t) {
+		String errorMessage = t.getCause() != null ? t.getCause().getMessage() : t.getMessage();
+    	
+    	BusinessObjectSkipped failedRecord = ExtractUtilities.buildBoSkipped(item, "SkipInProcess", errorMessage);
+    	jobExecutionHolder.addFailedBusinessObject(failedRecord);
+	}
 	
-//    @Override
-//	public void onSkipInWrite(Object item, Throwable t) {
-//		super.onSkipInWrite(item, t);
-//	}
+    @Override
+	public void onSkipInWrite(Object item, Throwable t) {
+    	String errorMessage = t.getCause() != null ? t.getCause().getMessage() : t.getMessage();
+    	
+    	BusinessObjectSkipped failedRecord = ExtractUtilities.buildBoSkipped(item, "SkipInWrite", errorMessage);
+    	jobExecutionHolder.addFailedBusinessObject(failedRecord);
+	}
 
 }

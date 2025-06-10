@@ -50,4 +50,12 @@ public class Transaction {
     private Long stepExecutionId;
     @Column(nullable = false)
     private String stepExecutionName;
+    
+    public String toRawData() {
+    	return transactionId + "," 
+				+ amount + "," 
+				+ status + "," 
+				+ transactionDate+ "," 
+				+ description;
+	}
 }

@@ -153,8 +153,10 @@ public class JobTest {
         // Vérifier les métriques de lecture et de skip
         StepExecution stepExecution = jobExecution.getStepExecutions().stream().filter(se -> se.getStepName().equals("transactionStep")).findFirst().get();
         assertEquals("transactionStep", stepExecution.getStepName());
-        assertEquals(3, stepExecution.getWriteCount(), "3 transactions valides doivent être écrites");
-        assertEquals(1, stepExecution.getReadSkipCount(), "1 transactions invalides doivent être skippées au niveau READ");
+        assertEquals(3, stepExecution.getWriteCount(), 			"3 transactions valides doivent être écrites");
+        assertEquals(1, stepExecution.getReadSkipCount(), 		"1 transactions invalides doivent être skippées au niveau READ");
+        assertEquals(2, stepExecution.getProcessSkipCount(), 	"2 transactions invalides doivent être skippés au niveau PROCESS");
+        assertEquals(0, stepExecution.getWriteSkipCount(), 		"0 transactions invalides doivent être skippés au niveau WRITE");
 
         // Vérifier les transactions valides et échouées
         EntityManager entityManager = entityManagerFactory.createEntityManager();
@@ -172,6 +174,7 @@ public class JobTest {
             assertTrue(transactions.stream().anyMatch(t -> t.getTransactionId().equals("TX002-test")));
             assertTrue(transactions.stream().anyMatch(t -> t.getTransactionId().equals("TX003-test")));
             assertFalse(transactions.stream().anyMatch(t -> t.getTransactionId().equals("TX004-test")));
+            assertFalse(transactions.stream().anyMatch(t -> t.getTransactionId().equals("TX005-test")));
             
             assertTrue(transactions.stream().allMatch(t -> t.getJobExecutionId().equals(jobExecutionId)),
                     "Tous les enregistrements en succès doivent avoir le job_execution_id: " + jobExecutionId);
@@ -206,11 +209,18 @@ public class JobTest {
                     .setParameter("jobExecutionId", jobExecutionId)
                     .setParameter("stepExecutionId", stepExecution.getId())
                     .getResultList();
-            assertEquals(1, failedRecords.size(), "1 transactions échouées doivent être enregistrées");
+            assertEquals(3, failedRecords.size(), "3 transactions échouées doivent être enregistrées");
+            // SkipInRead
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInRead")));
             assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("150.AB")));
             assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("Character A is neither a decimal digit number")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInRead")));
-            
+            // SkipInProcess
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInProcess")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("TX005-test,0,APPROVED") && t.getRawData().contains("APPROVED")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("TX006-test,-1.2,APPROVED") && t.getRawData().contains("APPROVED")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("Amout value should not be negative or zero for an APPROVED transaction")));
+           
+            //
             assertTrue(failedRecords.stream().allMatch(t -> t.getJobExecutionId().equals(jobExecutionId)),
                     "Tous les enregistrements échoués doivent avoir le job_execution_id: " + jobExecutionId);
             assertTrue(failedRecords.stream().allMatch(t -> t.getJobExecutionName().equals(jobExecutionName)),

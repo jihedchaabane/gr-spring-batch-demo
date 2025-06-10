@@ -20,6 +20,10 @@ public class TransactionReadSkipPolicy implements SkipPolicy {
             log.error("Skipping transaction=> NumberFormatException: {}, skip count {}", throwable.getMessage(), skipCount);
             return true;
         }
+        if (throwable instanceof IllegalArgumentException || throwable.getCause() instanceof IllegalArgumentException) {
+            log.error("Skipping transaction=> IllegalArgumentException: {}, skip count {}", throwable.getMessage(), skipCount);
+            return true;
+        }
         return false;
     }
 }

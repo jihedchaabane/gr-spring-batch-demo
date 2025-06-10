@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.chj.gr.config.JobExecutionHolder;
 import com.chj.gr.entity.Transaction;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,6 +22,17 @@ public class TransactionItemProcessor implements ItemProcessor<Transaction, Tran
 
     @Override
     public Transaction process(Transaction transaction) throws Exception {
+    	
+    	if ("APPROVED".equals(transaction.getStatus())
+    			&& transaction.getAmount().doubleValue() <= 0) {
+			throw new IllegalArgumentException("Amout value should not be negative or zero for an APPROVED transaction: {" 
+					+ transaction.getTransactionId()
+					+ ":"
+					+ transaction.getAmount().doubleValue()
+					+ "}"
+			);
+		}
+    	
     	transaction.setJobExecutionId(jobExecutionHolder.getStepExecution().getJobExecutionId());
     	transaction.setJobExecutionName(jobExecutionHolder.getStepExecution().getJobExecution().getJobInstance().getJobName());
     	transaction.setStepExecutionId(jobExecutionHolder.getStepExecution().getId());
@@ -29,7 +41,7 @@ public class TransactionItemProcessor implements ItemProcessor<Transaction, Tran
         // Exemple de transformation : Mettre le statut en majuscules
         transaction.setStatus(transaction.getStatus().toUpperCase());
         // Ajouter une description si vide
-        if (io.micrometer.common.util.StringUtils.isEmpty(transaction.getDescription())) {
+        if (StringUtils.isEmpty(transaction.getDescription())) {
             transaction.setDescription("Processed transaction");
         }
         return transaction;

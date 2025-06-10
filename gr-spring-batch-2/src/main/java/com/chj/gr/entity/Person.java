@@ -31,4 +31,8 @@ public class Person {
     @Column(nullable = false)
     private String stepExecutionName;
 
+    public String toRawData() {
+    	return firstName + "," 
+				+ lastName;
+	}
 }
