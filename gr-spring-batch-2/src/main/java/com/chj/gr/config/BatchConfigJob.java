@@ -1,17 +1,12 @@
 package com.chj.gr.config;
 
 import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionException;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -78,23 +73,6 @@ public class BatchConfigJob {
                     return RepeatStatus.FINISHED;
                 }, transactionManager)
                 .build();
-    }
-
-    @Bean
-    public CommandLineRunner runJob(JobLauncher jobLauncher, Job job) {
-        return args -> {
-            try {
-                // Create unique JobParameters
-                JobParameters jobParameters = new JobParametersBuilder()
-                        .addLong("time", System.currentTimeMillis())  // unique parameter
-                        .toJobParameters();
-
-                jobLauncher.run(job, jobParameters);
-                log.info("Le Batch job est invoké.");
-            } catch (JobExecutionException e) {
-            	log.error("Le Batch job a échoué: {}.", e.getMessage());
-            }
-        };
     }
 
 }

@@ -16,8 +16,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.chj.gr.config.person.PersonFieldSetMapper;
+import com.chj.gr.config.person.PersonReadSkipPolicy;
 import com.chj.gr.entity.Person;
 import com.chj.gr.listeners.ChunkNotificationListener;
+import com.chj.gr.listeners.CommonSkipListener;
 import com.chj.gr.listeners.StepExecutionNotificationListener;
 import com.chj.gr.listeners.person.ItemProcessPersonListener;
 import com.chj.gr.listeners.person.ItemReadPersonListener;
@@ -46,10 +49,9 @@ public class BatchConfigPerson {
                 .delimited()
                 .names(new String[]{"firstName", "lastName"})
                 .linesToSkip(1)
-                .targetType(Person.class)
                 /**
-                 * OR.
-                 
+                .targetType(Person.class)
+                * OR:
                 .fieldSetMapper(fieldSet -> {
                     Person person = new Person();
                     person.setFirstName(fieldSet.readString("firstName"));
@@ -57,18 +59,13 @@ public class BatchConfigPerson {
                     return person;
                 })
                 */
+                /**
+                 * OR:
+                 */
+                .fieldSetMapper(new PersonFieldSetMapper())
                 .build();
     }
 
-    /**
-     * Configuration du processeur.
-     * Transforme les données lues avant de les écrire.
-     */
-    @Bean
-    public PersonItemProcessor personProcessor() {
-        return new PersonItemProcessor();
-    }
-    
     /**
      * Configuration du writer.
      * Écrit les données transformées dans la base PostgreSQL.
@@ -77,11 +74,12 @@ public class BatchConfigPerson {
     public JdbcBatchItemWriter<Person> personWriter(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<Person>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                .sql("INSERT INTO batch_entity_person (first_name, last_name) VALUES (:firstName, :lastName)")
+                .sql("INSERT INTO batch_entity_person (first_name, last_name, job_execution_id, job_execution_name, step_execution_id, step_execution_name) "
+                		+ "VALUES (:firstName, :lastName, :jobExecutionId, :jobExecutionName, :stepExecutionId, :stepExecutionName)")
                 .dataSource(dataSource)
                 .build();
     }
-    
+
     /**
      * Configuration de l'étape (step).
      * Définit la séquence reader -> processor -> writer.
@@ -93,6 +91,8 @@ public class BatchConfigPerson {
     		FlatFileItemReader<Person> personReader, 
     		PersonItemProcessor personProcessor,
     		JdbcBatchItemWriter<Person> personWriter,
+    		PersonReadSkipPolicy personReadSkipPolicy,
+            CommonSkipListener commonSkipListener,
     		/**
              * listeners
              */
@@ -109,8 +109,11 @@ public class BatchConfigPerson {
                 .writer(personWriter)
                 .transactionManager(transactionManager)
                 .faultTolerant()
+                .skipPolicy(personReadSkipPolicy)
+                .listener(commonSkipListener) // For SkipListener
+                .skipLimit(10) // Allow up to 10 skips
                 .retry(Exception.class)      // Retry on any exception
-                .retryLimit(3)               // Retry up to 3 times
+                .retryLimit(2)               // Retry up to 3 times
                 /**
                  * listeners
                  */

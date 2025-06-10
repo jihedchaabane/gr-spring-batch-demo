@@ -13,8 +13,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.chj.gr.config.transaction.TransactionFieldSetMapper;
+import com.chj.gr.config.transaction.TransactionReadSkipPolicy;
 import com.chj.gr.entity.Transaction;
 import com.chj.gr.listeners.ChunkNotificationListener;
+import com.chj.gr.listeners.CommonSkipListener;
 import com.chj.gr.listeners.StepExecutionNotificationListener;
 import com.chj.gr.listeners.transaction.ItemProcessTransactionListener;
 import com.chj.gr.listeners.transaction.ItemReadTransactionListener;
@@ -44,10 +47,9 @@ public class BatchConfigTransaction {
                 .delimited()
                 .names("transactionId", "amount", "status", "transactionDate", "description")
                 .linesToSkip(1)
-                .targetType(Transaction.class)
                 /**
-                 * OR.
-                 
+                .targetType(Transaction.class)
+                 * OR:
                 .fieldSetMapper(fieldSet -> {
                 	Transaction transaction = new Transaction();
                 	transaction.setTransactionId(fieldSet.readString("transactionId"));
@@ -58,16 +60,11 @@ public class BatchConfigTransaction {
                     return transaction;
                 })
                 */
+                /**
+                 * OR:
+                 */
+                .fieldSetMapper(new TransactionFieldSetMapper())
                 .build();
-    }
-
-    /**
-     * Configuration du processeur.
-     * Transforme les données lues avant de les écrire.
-     */
-    @Bean
-    public TransactionItemProcessor transactionProcessor() {
-        return new TransactionItemProcessor();
     }
 
     /**
@@ -90,8 +87,10 @@ public class BatchConfigTransaction {
     		JobRepository jobRepository, 
     		PlatformTransactionManager transactionManager,
             FlatFileItemReader<Transaction> transactionReader, 
-            TransactionItemProcessor transactionProcessor,
+            TransactionItemProcessor transactionItemProcessor,
             JpaItemWriter<Transaction> transactionWriter,
+            TransactionReadSkipPolicy transactionReadSkipPolicy,
+            CommonSkipListener commonSkipListener,
     		/**
              * listeners
              */
@@ -103,12 +102,15 @@ public class BatchConfigTransaction {
         return new StepBuilder("transactionStep", jobRepository)
                 .<Transaction, Transaction>chunk(1000, transactionManager) // Taille du chunk pour traitement par lots
                 .reader(transactionReader)
-                .processor(transactionProcessor)
+                .processor(transactionItemProcessor)
                 .writer(transactionWriter)
                 .transactionManager(transactionManager)
                 .faultTolerant()
+                .skipPolicy(transactionReadSkipPolicy)
+                .listener(commonSkipListener) // For SkipListener
+                .skipLimit(10) // Allow up to 10 skips
                 .retry(Exception.class)      // Retry on any exception
-                .retryLimit(3)               // Retry up to 3 times
+                .retryLimit(2)               // Retry up to 2 times
                 /**
                  * listeners
                  */

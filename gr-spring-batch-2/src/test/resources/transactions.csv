@@ -2,3 +2,4 @@ transactionId,amount,status,transactionDate,description
 TX001-test,100.50,APPROVED,2025-06-01T10:00:00,Initial transaction-test
 TX002-test,200.75,APPROVED,2025-06-02T12:00:00,Payment-test
 TX003-test,150.25,REJECTED,2025-06-03T15:00:00,
+TX004-test,150.AB,REJECTED,2025-06-03T16:00:00,

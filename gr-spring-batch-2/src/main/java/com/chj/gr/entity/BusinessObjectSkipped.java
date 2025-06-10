@@ -1,6 +1,6 @@
 package com.chj.gr.entity;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,33 +12,30 @@ import lombok.Data;
 import lombok.ToString;
 
 /**
- * Entité représentant une transaction financière.
- * Utilisée pour démontrer le traitement des données avec Spring Batch.
+ * Entité JPA pour la table batch_entity_business_object_skipped.
+ * Stocke les business objects qui ont échouées lors de l'une des phases read/process/write.
  */
-@Data
 @Entity
-@Table(name = "batch_entity_transaction")
+@Table(name = "batch_entity_business_object_skipped")
+@Data
 @ToString
-public class Transaction {
+public class BusinessObjectSkipped {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private String transactionId;
-
-    @Column(nullable = false)
-    private BigDecimal amount;
-
-    @Column(nullable = false)
-    private String status;
-
-    @Column(nullable = false)
-    private String transactionDate;
-
-    @Column
-    private String description;
+    /**
+     * 
+     */
+    @Column(name = "raw_data", nullable = false)
+    private String rawData;
+    @Column(name = "error_level", nullable = false)
+    private String errorLevel;
+    @Column(name = "error_message", nullable = false)
+    private String errorMessage;
+    @Column(name = "error_timestamp", nullable = false)
+    private LocalDateTime errorTimestamp;
+    
     /**
      * 
      */
