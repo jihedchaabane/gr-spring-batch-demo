@@ -49,7 +49,7 @@ public class CommonSkipListener extends SkipListenerSupport<Object, Object> {
 	public void onSkipInWrite(Object item, Throwable t) {
     	String errorMessage = t.getCause() != null ? t.getCause().getMessage() : t.getMessage();
     	
-    	BusinessObjectSkipped failedRecord = ExtractUtilities.buildBoSkipped(item, "SkipInWrite", errorMessage);
+    	BusinessObjectSkipped failedRecord = ExtractUtilities.buildBoSkipped(item, "SkipInWrite", "Violation d'index unique ou clé primaire");
     	jobExecutionHolder.addFailedBusinessObject(failedRecord);
 	}
 
