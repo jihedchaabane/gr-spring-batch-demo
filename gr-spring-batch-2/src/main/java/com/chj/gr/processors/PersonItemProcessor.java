@@ -17,6 +17,15 @@ public class PersonItemProcessor implements ItemProcessor<Person, Person> {
     @Override
     public Person process(Person person) throws Exception {
         
+    	if ("UNKNOWN".equalsIgnoreCase(person.getFirstName())) {
+			throw new IllegalArgumentException("FirstName value should not be UNKNOWN/unknown for a person!"
+			);
+		}
+    	if ("UNKNOWN".equalsIgnoreCase(person.getLastName())) {
+			throw new IllegalArgumentException("LastName value should not be UNKNOWN/unknown for a person!"
+			);
+		}
+    	
     	person.setJobExecutionId(jobExecutionHolder.getStepExecution().getJobExecutionId());
     	person.setJobExecutionName(jobExecutionHolder.getStepExecution().getJobExecution().getJobInstance().getJobName());
     	person.setStepExecutionId(jobExecutionHolder.getStepExecution().getId());

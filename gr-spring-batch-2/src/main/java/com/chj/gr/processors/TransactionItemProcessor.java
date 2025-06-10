@@ -23,14 +23,9 @@ public class TransactionItemProcessor implements ItemProcessor<Transaction, Tran
     @Override
     public Transaction process(Transaction transaction) throws Exception {
     	
-    	if ("APPROVED".equals(transaction.getStatus())
+    	if ("APPROVED".equalsIgnoreCase(transaction.getStatus())
     			&& transaction.getAmount().doubleValue() <= 0) {
-			throw new IllegalArgumentException("Amout value should not be negative or zero for an APPROVED transaction: {" 
-					+ transaction.getTransactionId()
-					+ ":"
-					+ transaction.getAmount().doubleValue()
-					+ "}"
-			);
+			throw new IllegalArgumentException("Amout value should not be negative or zero for an APPROVED transaction!");
 		}
     	
     	transaction.setJobExecutionId(jobExecutionHolder.getStepExecution().getJobExecutionId());

@@ -67,10 +67,10 @@ public class JobTest {
     	
 		StepExecution stepExecution = jobExecution.getStepExecutions().stream().filter(se -> se.getStepName().equals("personStep")).findFirst().get();
         assertEquals("personStep", stepExecution.getStepName());
-        assertEquals(24, stepExecution.getReadCount(), 			"24 persons valides doivent être lu");
+        assertEquals(26, stepExecution.getReadCount(), 			"26 persons valides doivent être lu");
         assertEquals(24, stepExecution.getWriteCount(), 		"24 persons valides doivent être écrits");
         assertEquals(2, stepExecution.getReadSkipCount(), 		"2 persons invalides doivent être skippés au niveau READ");
-        assertEquals(0, stepExecution.getProcessSkipCount(), 	"0 persons invalides doivent être skippés au niveau PROCESS");
+        assertEquals(2, stepExecution.getProcessSkipCount(), 	"2 persons invalides doivent être skippés au niveau PROCESS");
         assertEquals(0, stepExecution.getWriteSkipCount(), 		"0 persons invalides doivent être skippés au niveau WRITE");
 		
     	/** Vérifier les données écrites dans la base */
@@ -122,13 +122,20 @@ public class JobTest {
                     .setParameter("jobExecutionId", jobExecutionId)
                     .setParameter("stepExecutionId", stepExecution.getId())
                     .getResultList();
-            assertEquals(2, failedRecords.size(), "2 persons échouées doivent être enregistrées");
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("Jiheddd")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("Chaabaneee")));
+            assertEquals(4, failedRecords.size(), "4 persons échouées doivent être enregistrées");
+            // SkipInRead
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInRead")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("Jihed-test-25"))); 	// lastname is null
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("chaabane-test-26")));	// firstname is null
             assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("FirstName is either null or empty!")));
             assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("LastName is either null or empty!")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInRead")));
-            
+            // SkipInProcess
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInProcess")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("chaabane-test-27")));	// firstname is unknown
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("Jihed-test-28")));		// lastname is unknown
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("FirstName value should not be UNKNOWN/unknown for a person!")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("LastName value should not be UNKNOWN/unknown for a person!")));
+            //...
             assertTrue(failedRecords.stream().allMatch(t -> t.getJobExecutionId().equals(jobExecutionId)),
                     "Tous les enregistrements échoués doivent avoir le job_execution_id: " + jobExecutionId);
             assertTrue(failedRecords.stream().allMatch(t -> t.getJobExecutionName().equals(jobExecutionName)),
@@ -212,13 +219,13 @@ public class JobTest {
             assertEquals(3, failedRecords.size(), "3 transactions échouées doivent être enregistrées");
             // SkipInRead
             assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInRead")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("150.AB")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("150.AB")));		// Amount is invalid number.
             assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("Character A is neither a decimal digit number")));
             // SkipInProcess
             assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorLevel().equals("SkipInProcess")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("TX005-test,0,APPROVED") && t.getRawData().contains("APPROVED")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("TX006-test,-1.2,APPROVED") && t.getRawData().contains("APPROVED")));
-            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("Amout value should not be negative or zero for an APPROVED transaction")));
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("TX005-test,0,APPROVED") && t.getRawData().contains("APPROVED"))); 		// Amount is zero 	  for APPROVED transaction.
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getRawData().contains("TX006-test,-1.2,APPROVED") && t.getRawData().contains("APPROVED"))); 	// Amount is negative for APPROVED transaction.
+            assertTrue(failedRecords.stream().anyMatch(t -> t.getErrorMessage().contains("Amout value should not be negative or zero for an APPROVED transaction!")));
            
             //
             assertTrue(failedRecords.stream().allMatch(t -> t.getJobExecutionId().equals(jobExecutionId)),
