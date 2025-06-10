@@ -34,7 +34,7 @@ spring:
       schema: PUBLIC            # Spécifier explicitement le schéma PUBLIC pour Batch
 
 skipped:
-  batchSize: 3
+  batchSize: 100
 
 # Configuration du logging pour déboguer l'initialisation
 logging:
