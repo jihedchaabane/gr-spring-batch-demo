@@ -2,6 +2,7 @@ package com.chj.gr.config.person;
 
 import org.springframework.batch.core.step.skip.SkipLimitExceededException;
 import org.springframework.batch.core.step.skip.SkipPolicy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +27,10 @@ public class PersonSkipPolicy implements SkipPolicy {
         /**
          * WRITE Level.
          */
-//        if (throwable instanceof DataIntegrityViolationException) {
-//        	log.error("Skipping person => DataIntegrityViolationException: {}, skip count {}", throwable.getMessage(), skipCount);
-//            return true;
-//		}
+        if (throwable instanceof DataIntegrityViolationException) {
+        	log.error("Skipping person => DataIntegrityViolationException: {}, skip count {}", throwable.getMessage(), skipCount);
+            return true;
+		}
         return false;
     }
 }
